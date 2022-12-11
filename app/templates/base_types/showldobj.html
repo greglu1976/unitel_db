@@ -1,0 +1,48 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+    {% if lns %}
+    <h2 class="mt-4">{{ld.name}}</h2>
+    <p><strong>{{ld.description}}</strong></p>
+    <hr class="my-4">
+    <p>Перечень логических узлов</p>
+    <div class="container small">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Краткое имя функции <br><span style="background: gold">[mms, dxf, fr, sg]</span></th>
+                <th scope="col">Префикс ЛУ <br><span style="background: gold">[mms]</span></th>
+                <th scope="col">Класс ЛУ <br><span style="background: gold">[mms]</span></th>
+                <th scope="col">Номер ЛУ <br><span style="background: gold">[mms]</span></th>
+                <th scope="col">Тип ЛУ</th>
+                <th scope="col">Полное имя функции</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in lns %}
+            <tr>
+                <td>{{item.short_name}}</td>
+                <td>{{item.ln_prefix}}</td>
+                <td>{{item.class_name}}</td>
+                {% if item.get_ln_instance == -1%}<td>(n)</td>
+                {% else %}<td>{{item.get_instance}}</td>{% endif %}
+                <td><a href="?name={{item.ln_type}}&type=ln">{{item.ln_type}}</a></td>
+                <td>{{item.full_name}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+
+    {% else %}
+    <h2 class="mt-4">В логическом устройстве "{{ld.name}}" ({{ld.get_description}}) нет объектов :(</h2>
+    {% endif %}
+</main>
+
+{% endblock %}

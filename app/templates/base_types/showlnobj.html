@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+        {% if objs %}
+        <h2 class="mt-4">{{fb.short_name}}</h2>
+        <p><strong>{{fb.full_name}}</strong></p>
+        <hr class="my-4">
+        <p>Объекты узла, входящие в отчеты</p>
+        <div class="container small">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                  <th scope="col">Объект данных</th>
+                  <th scope="col">Значащий атрибут</th>
+                  <th scope="col">Сигнал</th>
+                  <th scope="col">Статус</th>
+                  <th scope="col">Функц. группа</th>
+                  <th scope="col">ЦУС/ РДУ/ РАС</th>
+                  <th scope="col">Канал в РАС / уставка</th>
+                  <th scope="col">Датасет</th>
+                  <th scope="col">Тип сигнала</th>
+                  <th scope="col">Номер сигнала</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in objs %}
+
+                <tr>
+                    <td>{{item.data_object}}</td>
+                    <td>{{item.clue_attr}}</td>
+                    <td>{{item.signal}}</td>
+                    <td>{{item.status}}</td>
+                    {% if item.func_group == 1%}<td>АС</td>{% endif %}
+                    {% if item.func_group > 1 and item.func_group < 13 %}<td>ПС1</td>{% endif %}
+                    {% if item.func_group > 12 and item.func_group < 22 %}<td>ПС2</td>{% endif %}
+                    {% if item.func_group > 21 and item.func_group < 24 %}<td>ОС</td>{% endif %}
+                    {% if item.func_group > 23 or item.func_group < 1 %}<td>-</td>{% endif %}
+                    <td>{{item.cus}}/{{item.rdu}}/{{item.ras}}</td>
+                    <td>{{item.sgras_name}}</td>
+                    <td>{{item.dataset}}</td>
+                    <td>{{item.signal_type}}</td>
+                    <td>{{item.signal_number}}</td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+
+        {% else %}
+        <h2 class="mt-4">В типе логического узла "{{fb.short_name}}" ({{fb.full_name}}) нет объектов :(</h2>
+        {% endif %}
+
+</main>
+
+{% endblock %}

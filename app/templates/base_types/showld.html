@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+    {% if lds %}
+    <h2 class="mt-4">{{ied.name}}</h2>
+    <p><strong>{{ied.description}}</strong></p>
+    <hr class="my-4">
+    <p>Перечень логических устройств терминала</p>
+    <div class="container small">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Логическое устройство <span style="background: gold">[mms]</span></th>
+                <th scope="col">Краткое обозначение <span style="background: gold">[mms]</span></th>
+                <th scope="col">Полное обозначение</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in lds %}
+            <tr>
+                <td><a href="?name={{item.name}}&type=ld">{{item.name}}</a></td>
+                <td>{{item.fb_name}}</td>
+                <td>{{item.description}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <h2 class="mt-4">В терминале "{{ied.name}}" нет логических устройств :(</h2>
+    {% endif %}
+</main>
+
+{% endblock %}
