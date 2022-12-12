@@ -4,7 +4,7 @@ from django.db import models
 # --------------------CDCs----------------------------------------
 class CDCs(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, verbose_name='ОКД', default='')
+    name = models.CharField(max_length=64, verbose_name='ОКД', default='', unique=True)
 
     def __str__(self):
         return self.name
@@ -17,7 +17,7 @@ class CDCs(models.Model):
 # --------------------ClueAttrs----------------------------------------
 class ClueAttrs(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, verbose_name='Описание')
+    name = models.CharField(max_length=64, verbose_name='Описание', unique=True)
 
     def __str__(self):
         return self.name
@@ -43,7 +43,7 @@ class DataObjects(models.Model):
 # --------------------Datasets----------------------------------------
 class Datasets(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=256, verbose_name='Датасет')
+    name = models.CharField(max_length=256, verbose_name='Датасет', unique=True)
 
     def __str__(self):
         return self.name
@@ -53,10 +53,11 @@ class Datasets(models.Model):
         verbose_name_plural = 'Датасеты'
         ordering = ['name']
 
+
 # --------------------Statuses----------------------------------------
 class Statuses(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=256, verbose_name='Статусы сигнала')
+    name = models.CharField(max_length=256, verbose_name='Статусы сигнала', unique=True)
 
     def __str__(self):
         return self.name
@@ -69,7 +70,7 @@ class Statuses(models.Model):
 # --------------------Signals----------------------------------------
 class Signals(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, verbose_name='Сигналы')
+    name = models.CharField(max_length=64, verbose_name='Сигналы', unique=True)
 
     def __str__(self):
         return self.name
@@ -120,11 +121,17 @@ class LNobject(models.Model):
         verbose_name_plural = 'Объекты логических узлов'
         ordering = ['data_object']
 
+    @property
+    def get_dataset(self):
+        if self.dataset:
+            return self.dataset
+        else:
+            return "<Чертеж>"
 
 # --------------------LogicNodesTypes----------------------------------------
 class LogicNodesTypes(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, verbose_name='Имя типа ЛУ')
+    name = models.CharField(max_length=64, verbose_name='Имя типа ЛУ', unique=True)
     description = models.TextField(max_length=1024, blank=True, verbose_name='Описание')
 
     def __str__(self):
@@ -222,15 +229,15 @@ class InputsAndLNs(models.Model):
     ln = models.ForeignKey(LogicNodeInstantiated, on_delete=models.CASCADE, verbose_name='Экземпляр лог. узла', null=True)
 
     def __str__(self):
-        return self.switch
+        return self.input
 
     class Meta:
         verbose_name = 'Вход в составе ФБ'
         verbose_name_plural = 'Входы составе ФБ'
         ordering = ['input']
 
-
-# --------------------LNobjConnections----------------------------------------
+'''
+# --------------------LNobjConnections--УДАЛИТЬ--------------------------------------
 class LNobjConnections(models.Model):
     id = models.AutoField(primary_key=True)
     ln_inst = models.ForeignKey(LogicNodeInstantiated, on_delete=models.CASCADE, verbose_name='Экземпляр логического узла', null=True)
@@ -240,9 +247,24 @@ class LNobjConnections(models.Model):
         return str(self.ln_inst)
 
     class Meta:
-        verbose_name = 'Связь между экземплярами логических узлов и объектами'
-        verbose_name_plural = 'Связи между экземплярами логических узлов и объектами'
+        verbose_name = ' -Удалить- Связь между экземплярами логических узлов и объектами'
+        verbose_name_plural = '-Удалить- Связи между экземплярами логических узлов и объектами'
         ordering = ['ln_inst']
+'''
+# --------------------LNtypeObjConnections----------------------------------------
+class LNtypeObjConnections(models.Model):
+    id = models.AutoField(primary_key=True)
+    ln_type = models.ForeignKey(LogicNodesTypes, on_delete=models.CASCADE, verbose_name='Тип логического узла', null=True)
+    ln_obj = models.ForeignKey(LNobject, on_delete=models.CASCADE, verbose_name='Объект лог. узла', null=True)
+
+    def __str__(self):
+        return str(self.ln_type)
+
+    class Meta:
+        verbose_name = 'Связь между типом логического узла и объектами'
+        verbose_name_plural = 'Связи между типами логических узлов и объектами'
+        ordering = ['ln_type']
+
 
 # --------------------LogicDevices----------------------------------------
 class LogicDevices(models.Model):

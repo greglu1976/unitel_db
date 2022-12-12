@@ -1,9 +1,14 @@
 from django.contrib import admin
 
 from .models import Cabinets, PhDLDconnections, Terminals, LogicDevices, LogicNodeInstantiated, LogicNodesTypes, \
-    LNobject, CDCs, DataObjects, Statuses, Datasets, Signals, ClueAttrs, LDLNconnections, LNobjConnections, InputsAndLNs, \
-    SwitchesAndLNs, Input, Switch
+    LNobject, CDCs, DataObjects, Statuses, Datasets, Signals, ClueAttrs, LDLNconnections, InputsAndLNs, \
+    SwitchesAndLNs, Input, Switch, LNtypeObjConnections
 
+class LNtypeObjConnectionsAdmin(admin.ModelAdmin):
+    save_as = True
+    list_display = ('ln_type', 'ln_obj')
+    list_filter = ('ln_type',)
+admin.site.register(LNtypeObjConnections,LNtypeObjConnectionsAdmin)
 
 class InputsAndLNsAdmin(admin.ModelAdmin):
     save_as = True
@@ -44,16 +49,16 @@ admin.site.register(PhDLDconnections, PhDLDconnectionsAdmin)
 class LDLNconnectionsAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('ld', 'ln')
-    list_filter = ('ld',)
+    list_filter = ('ld', 'ln')
 admin.site.register(LDLNconnections, LDLNconnectionsAdmin)
-
+'''
 class LNobjConnectionsAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('ln_inst', 'ln_obj')
-    list_filter = ('ln_inst',)
+    list_filter = ('ln_inst', 'ln_obj')
 admin.site.register(LNobjConnections, LNobjConnectionsAdmin)
 
-
+'''
 class TerminalsAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('name', 'description')

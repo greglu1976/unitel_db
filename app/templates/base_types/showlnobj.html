@@ -6,8 +6,8 @@
 <main class="container py-5">
 
         {% if objs %}
-        <h2 class="mt-4">{{fb.short_name}}</h2>
-        <p><strong>{{fb.full_name}}</strong></p>
+        <h2 class="mt-4">{{lntype.name}}</h2>
+        <p><strong>{{lntype.description}}</strong></p>
         <hr class="my-4">
         <p>Объекты узла, входящие в отчеты</p>
         <div class="container small">
@@ -15,6 +15,7 @@
             <thead>
                 <tr>
                   <th scope="col">Объект данных</th>
+                  <th scope="col">ОКД</th>
                   <th scope="col">Значащий атрибут</th>
                   <th scope="col">Сигнал</th>
                   <th scope="col">Статус</th>
@@ -31,6 +32,7 @@
 
                 <tr>
                     <td>{{item.data_object}}</td>
+                    <td>{{item.cdc}}</td>
                     <td>{{item.clue_attr}}</td>
                     <td>{{item.signal}}</td>
                     <td>{{item.status}}</td>
@@ -41,7 +43,7 @@
                     {% if item.func_group > 23 or item.func_group < 1 %}<td>-</td>{% endif %}
                     <td>{{item.cus}}/{{item.rdu}}/{{item.ras}}</td>
                     <td>{{item.sgras_name}}</td>
-                    <td>{{item.dataset}}</td>
+                    <td>{{item.get_dataset}}</td>
                     <td>{{item.signal_type}}</td>
                     <td>{{item.signal_number}}</td>
                 </tr>
@@ -53,7 +55,7 @@
 
 
         {% else %}
-        <h2 class="mt-4">В типе логического узла "{{fb.short_name}}" ({{fb.full_name}}) нет объектов :(</h2>
+        <h2 class="mt-4">В типе логического узла "{{lntype.name}}" ({{lntype.description}}) нет объектов :(</h2>
         {% endif %}
 
 </main>

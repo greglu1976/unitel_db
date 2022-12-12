@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 from .models import Cabinets, Terminals, PhDLDconnections, LogicDevices, LogicNodesTypes, DataObjects, LDLNconnections, \
-    LogicNodeInstantiated, LNobjConnections, LNobject
+    LogicNodeInstantiated, LNobject, LNtypeObjConnections
 from .wordprocessor import word_report
 
 def index(request):
@@ -56,11 +56,12 @@ def show(request):
     # -------------------------------обработка ln------------------------------
     if type == 'ln':
         lntype = LogicNodesTypes.objects.get(name=name)
-        print('++++++++++++++', lntype.id)
-        fb = LogicNodeInstantiated.objects.get(ln_type=lntype.id)
-        print(fb.short_name)
-        fb_desc = LogicNodeInstantiated.objects.get(short_name=fb)
-        objects = LNobjConnections.objects.all().filter(ln_inst=fb.id)
+        #print('++++++++++++++', lntype.id)
+        #fb = LogicNodeInstantiated.objects.filter(ln_type=lntype.id).first()
+        #print(fb.short_name)
+        #fb_desc = LogicNodeInstantiated.objects.get(short_name=fb)
+        #fb_desc = LogicNodeInstantiated.objects.all().filter(ln_type=lntype)
+        objects = LNtypeObjConnections.objects.all().filter(ln_type=lntype.id)
 
         objs = list()
         for item in objects.iterator():
@@ -69,6 +70,6 @@ def show(request):
             object = LNobject.objects.get(data_object=object_id)
             objs.append(object)
             print('------------>', objs)
-        return render(request, 'base_types/showlnobj.html', {'fb': fb_desc, 'objs': objs})
+        return render(request, 'base_types/showlnobj.html', {'objs': objs, 'lntype':lntype})
 
 
