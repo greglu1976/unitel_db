@@ -6,7 +6,7 @@ from django.http import HttpResponse
 import pandas as pd
 
 from .tables import add_row_table_reports, add_table_reports, add_spec_row_table_reports
-from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects, LDLNconnections, LogicNodeInstantiated
+from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects
 
 def word_report(request, cab):
 
@@ -34,17 +34,42 @@ def word_report(request, cab):
 
         #ищем состав лог. устройств в нем
         connections = PhDLDconnections.objects.all().filter(ied=cabinet.terminal1)
+
         for item in connections:
-            en_ld_name = item.ld
-            print('en_ld_name---->', en_ld_name)
-            ld = LogicDevices.objects.get(name=item.ld)
-            ru_ld_name  = ld.fb_name
-            print('ru_ld_name---->', ru_ld_name)
-            ldln_conns = LDLNconnections.objects.all().filter(ld=item.ld)
-            for ldln_conn in ldln_conns:
-                ru_ln_name = ldln_conn.ln
-                print('1Столбец ======>', ru_ld_name, '/', ru_ln_name)
-                LogicNodeInstantiated
+            print('---->', item.ld)
+            ld_short_eng_name_field = str(item.ld)  # взяли имя для второго столбца ATCC/....
+            ld = LogicDevices.objects.get(name=item.LDname)
+            ld_short_rus_name_field = str(ld.short_name) # взяли имя для столбца сигнал в самой первой части ДЗАТ / ....
+            print('ld_short_rus_name', ld_short_rus_name_field)
+
+            lns = LDcontainer.objects.all().filter(name=item.LDname)
+            for ln in lns:
+                ln_short_rus_name_field = str(ln.short_fb_name) # взяли имя для столбца сигнал в самой первой части АРН Т / АВРС
+                class_full_eng_name_field = str(ln.ln_prefix)+str(ln.ln_name)+ln.get_str_ln_instance
+
+                print(ln.ln_type)
+                das = LnTypes.objects.all().filter(name=ln.ln_type)
+                for da in das:
+                    #print('======================', da.data_obj)
+                    data_obj_sen = DataObjects.objects.get(name=da.data_obj)
+                    attr_rus_field = str(data_obj_sen.desc)
+                    if da.signal:
+                         attr_rus_field = str(da.signal)
+                    _func_group = da.func_group # оставляем интегер для последующей фильтрации датасета по функ группе
+                    _clue_attr_name_field = str(da.get_clue_attr) # готовые поля для Значащих атрибутов
+                    _clue_attr_status_field = str(da.get_status) # готовые поля для Значащих атрибутов
+                    _signal_field = ld_short_rus_name_field + ' / ' + ln_short_rus_name_field + ':' + attr_rus_field
+                    _iec_name = ld_short_eng_name_field + '/' + class_full_eng_name_field + '.' + da.get_str_data_obj
+                    _cus = da.get_cus
+                    _rdu = str(da.rdu)
+                    _ras = str(da.ras)
+                    _dataset = da.get_dataset
+                    if _dataset!='-':
+                        datasets.add(_dataset)
+                    df.loc[len(df.index)] = [_signal_field, _iec_name, _clue_attr_name_field, _clue_attr_status_field,
+                                              _func_group, _cus, _rdu, _ras, _dataset]
+
+
 
 
 
