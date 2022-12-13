@@ -12,7 +12,7 @@ from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects, LDLNc
 def word_report(request, cab):
 
 # СОЗДАЕМ ОТЧЕТ
-
+    SETTING_CDCS = ('SPG', 'ING', 'ASG', 'ENG') # ОКД для уставок
 
     document = Document('base_types/templates/template.docx')
     document.add_heading(cab, 2)
@@ -25,10 +25,13 @@ def word_report(request, cab):
 
     df = pd.DataFrame(columns=['_ru_ld_name', '_ru_ln_name', '_ru_signal', '_en_ld_names', '_prefix', '_ln', '_instance',
                                '_en_signal', '_clue_attr', '_status', '_func_group', '_cus', '_rdu', '_ras', '_dataset',
-                               '_sgras_name', '_dxf_signal_type', '_dxf_signal_number'])
-
-
+                               '_sgras_name', '_dxf_signal_type', '_dxf_signal_number','cdc'])
     datasets = set()
+
+# датафрейм для генерации уставок
+    df_sg = pd.DataFrame(columns=['_sg_name', '_sg_desc', '_sg_spg_conds', '_cdc', 'weight'])
+
+
 
     # ищем шкаф в базе
     cabinet = Cabinets.objects.get(name=cab)
@@ -68,15 +71,27 @@ def word_report(request, cab):
                     _sgras_name = obj_obj.sgras_name
                     _dxf_signal_type = obj_obj.signal_type
                     _dxf_signal_number = obj_obj.signal_number
+                    _cdc = obj_obj.cdc
                     if _dataset!="<Чертеж>": # если датасет не пустой добавляем строчку в датафрейм
                         datasets.add(_dataset)
                         df.loc[len(df.index)] = [_ru_ld_name, _ru_ln_name, _ru_signal, _en_ld_name, _prefix, _ln,
                                                  _instance, _en_signal, _clue_attr, _status, _func_group, _cus, _rdu,
-                                                 _ras,_dataset,_sgras_name, _dxf_signal_type, _dxf_signal_number]
-                    print('+++++++++++++',_ru_ld_name, '/',_ru_ln_name, ':',_ru_signal )
+                                                 _ras,_dataset,_sgras_name, _dxf_signal_type, _dxf_signal_number, _cdc]
+                    #print('+++++++++++++',_ru_ld_name, '/',_ru_ln_name, ':', _ru_signal )
 
+                    # датафрейм для уставок
+
+                    if str(_cdc) in SETTING_CDCS:
+                        weight = 1
+                        if str(_cdc) =='SPG' or str(_cdc) == 'ENG': # чтобы переключатели вниз отсортировались
+                            weight = 2
+                        df_sg.loc[len(df_sg.index)] = [_sgras_name, _ru_signal, _status, _cdc, weight]
+                        print('>',_sgras_name, _ru_signal, _status, _cdc, weight)
+
+
+
+# выводим таблицу с ММС
         datasets = list(datasets)
-        print('lenlist', datasets)
         datasets.sort()
 
         dataframe_list = list()
@@ -92,12 +107,25 @@ def word_report(request, cab):
 
             dataframe = dataframe.sort_values('_func_group')
             print('вторая часть марлезонского балета')
+            # dataframe = dataframe.reset_index(drop=True)
             for row in dataframe.itertuples():
                 #print(row)
                 row_no_index = (str(row[1])+' / '+str(row[2])+': '+str(row[3]), str(row[4])+'/'+str(row[5])+str(row[6])
-                                +str(row[7])+'.'+str(row[8]), row[9], row[10], row[11], row[12],row[13], row[14])
-                dataframe = dataframe.reset_index(drop=True)
+                                +str(row[7])+'.'+str(row[8]), row[9], row[10], row[11], row[12], row[13], row[14])
                 add_row_table_reports(t1, row_no_index)
+
+# выводим таблицу с уставками
+        p2 = document.add_paragraph('Уставки')
+        p2.style = 'ДОК Таблица Название'
+        t2 = add_table_reports(document)
+        df_sg = df_sg.sort_values('weight') # сортируем по весу
+        #df_sg = df_sg.reset_index(drop=True)
+        for row in df_sg.itertuples():
+            row_add = (row[1], row[2], row[3], '', '','','','')
+            add_row_table_reports(t2, row_add)
+            print(row[1], row[2], row[3])
+
+
 
 
 # СОХРАНЕНИЕ ДОКУМЕНТА
