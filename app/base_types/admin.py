@@ -77,10 +77,9 @@ class LogicNodeInstantiatedAdmin(admin.ModelAdmin):
     list_filter = ('short_name',)
 admin.site.register(LogicNodeInstantiated, LogicNodeInstantiatedAdmin)
 
-
 class LogicNodesTypesAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('name', 'description')
+    list_display = ('name', 'description','explanation')
     list_filter = ('name',)
 admin.site.register(LogicNodesTypes, LogicNodesTypesAdmin)
 

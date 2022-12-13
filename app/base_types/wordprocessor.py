@@ -6,7 +6,8 @@ from django.http import HttpResponse
 import pandas as pd
 
 from .tables import add_row_table_reports, add_table_reports, add_spec_row_table_reports
-from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects, LDLNconnections, LogicNodeInstantiated
+from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects, LDLNconnections, LogicNodeInstantiated, \
+    LNtypeObjConnections, LNobject
 
 def word_report(request, cab):
 
@@ -21,7 +22,12 @@ def word_report(request, cab):
     #for item in cabinets.iterator():
      #   add_row_table_reports(t,(item.name,'','','','','','',''))
 
-    df = pd.DataFrame(columns=['signal', 'iec', 'attr_name', 'attr_status', 'alm', 'cus', 'rdu', 'ras', 'dataset'])
+
+    df = pd.DataFrame(columns=['_ru_ld_name', '_ru_ln_name', '_ru_signal', '_en_ld_names', '_prefix', '_ln', '_instance',
+                               '_en_signal', '_clue_attr', '_status', '_func_group', '_cus', '_rdu', '_ras', '_dataset',
+                               '_sgras_name', '_dxf_signal_type', '_dxf_signal_number'])
+
+
     datasets = set()
 
     # ищем шкаф в базе
@@ -35,43 +41,63 @@ def word_report(request, cab):
         #ищем состав лог. устройств в нем
         connections = PhDLDconnections.objects.all().filter(ied=cabinet.terminal1)
         for item in connections:
-            en_ld_name = item.ld
-            print('en_ld_name---->', en_ld_name)
+            _en_ld_name = item.ld
             ld = LogicDevices.objects.get(name=item.ld)
-            ru_ld_name  = ld.fb_name
-            print('ru_ld_name---->', ru_ld_name)
+            _ru_ld_name  = ld.fb_name.split('_')[0] # отрезаем часть после подчеркивания
+            print('*******', ld.fb_name)
             ldln_conns = LDLNconnections.objects.all().filter(ld=item.ld)
             for ldln_conn in ldln_conns:
-                ru_ln_name = ldln_conn.ln
-                print('1Столбец ======>', ru_ld_name, '/', ru_ln_name)
-                LogicNodeInstantiated
-
-
+                _ru_ln_name = str(ldln_conn.ln).split('_')[0] # отрезаем часть после подчеркивания
+                got_ln = LogicNodeInstantiated.objects.get(short_name=ldln_conn.ln) # ищем тип ЛУ, чтобы вывести его объекты
+                _prefix = got_ln.ln_prefix
+                _ln = got_ln.class_name
+                _instance = got_ln.instance
+                lnobj_conns = LNtypeObjConnections.objects.all().filter(ln_type=got_ln.ln_type)
+                # прогоняем в цикле объекты типа логического узла
+                for obj in lnobj_conns:
+                    _en_signal = str(obj.ln_obj).split('_')[0] # отрезаем часть после подчеркивания
+                    obj_obj = LNobject.objects.get(pk=obj.ln_obj_id)
+                    _status = obj_obj.status
+                    _clue_attr = obj_obj.clue_attr
+                    _func_group = obj_obj.func_group
+                    _cus = obj_obj.cus
+                    _rdu = obj_obj.rdu
+                    _ras = obj_obj.ras
+                    _dataset = obj_obj.get_dataset
+                    _ru_signal = obj_obj.signal
+                    _sgras_name = obj_obj.sgras_name
+                    _dxf_signal_type = obj_obj.signal_type
+                    _dxf_signal_number = obj_obj.signal_number
+                    if _dataset!="<Чертеж>": # если датасет не пустой добавляем строчку в датафрейм
+                        datasets.add(_dataset)
+                        df.loc[len(df.index)] = [_ru_ld_name, _ru_ln_name, _ru_signal, _en_ld_name, _prefix, _ln,
+                                                 _instance, _en_signal, _clue_attr, _status, _func_group, _cus, _rdu,
+                                                 _ras,_dataset,_sgras_name, _dxf_signal_type, _dxf_signal_number]
+                    print('+++++++++++++',_ru_ld_name, '/',_ru_ln_name, ':',_ru_signal )
 
         datasets = list(datasets)
+        print('lenlist', datasets)
         datasets.sort()
 
         dataframe_list = list()
         for dataset in datasets: # делим датафрейм на части по датасетам
-            dataframe_list.append(df[df['dataset'] == dataset])
+            dataframe_list.append(df[df['_dataset'] == dataset])
 
         p1 = document.add_paragraph('Основные параметры функций')
         p1.style = 'ДОК Таблица Название'
         t1 = add_table_reports(document)
 
         for dataframe in dataframe_list:
-            add_spec_row_table_reports(t1, ('Имя набора данных:', dataframe.iloc[0]['dataset']))
+            add_spec_row_table_reports(t1, ('Имя набора данных:', dataframe.iloc[0]['_dataset']))
 
-            dataframe = dataframe.sort_values('alm')
+            dataframe = dataframe.sort_values('_func_group')
             print('вторая часть марлезонского балета')
             for row in dataframe.itertuples():
-                print(row)
-                row_no_index = (row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+                #print(row)
+                row_no_index = (str(row[1])+' / '+str(row[2])+': '+str(row[3]), str(row[4])+'/'+str(row[5])+str(row[6])
+                                +str(row[7])+'.'+str(row[8]), row[9], row[10], row[11], row[12],row[13], row[14])
                 dataframe = dataframe.reset_index(drop=True)
                 add_row_table_reports(t1, row_no_index)
-
-
-
 
 
 # СОХРАНЕНИЕ ДОКУМЕНТА

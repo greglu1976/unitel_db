@@ -80,7 +80,6 @@ class Signals(models.Model):
         verbose_name_plural = 'Перечни сигналов'
         ordering = ['name']
 
-
 # -------------------------------------------------------------------
 # --------------------LNobject----------------------------------------
 class LNobject(models.Model):
@@ -124,7 +123,7 @@ class LNobject(models.Model):
     @property
     def get_dataset(self):
         if self.dataset:
-            return self.dataset
+            return str(self.dataset)
         else:
             return "<Чертеж>"
 
@@ -133,6 +132,7 @@ class LogicNodesTypes(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, verbose_name='Имя типа ЛУ', unique=True)
     description = models.TextField(max_length=1024, blank=True, verbose_name='Описание')
+    explanation = models.TextField(max_length=2048, blank=True, verbose_name='Пояснение')
 
     def __str__(self):
         return self.name
@@ -180,9 +180,6 @@ class Input(models.Model):
         verbose_name = 'Вход'
         verbose_name_plural = 'Входы'
         ordering = ['description']
-
-
-
 
 # --------------------LogicNodeInstantiated----------------------------------------
 class LogicNodeInstantiated(models.Model):
@@ -294,7 +291,6 @@ class LDLNconnections(models.Model):
         verbose_name = 'Связь между логическими устройствами и экземплярами логических узлов'
         verbose_name_plural = 'Связи между логическими устройствами и экземплярами логических узлов'
         ordering = ['ld']
-
 
 # --------------------Terminals----------------------------------------
 class Terminals(models.Model):
