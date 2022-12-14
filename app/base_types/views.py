@@ -5,6 +5,7 @@ from .models import Cabinets, Terminals, PhDLDconnections, LogicDevices, LogicNo
     LogicNodeInstantiated, LNobject, LNtypeObjConnections
 from .wordprocessor import word_report
 
+
 def index(request):
     return render(request, 'base_types/main.html')
 
@@ -37,7 +38,6 @@ def show(request):
             #print(obj)
             lds.append(obj)
         lds.sort(key=lambda x: x.fb_name)
-        print('****************',lds[0])
         return render(request, 'base_types/showld.html', {'ied': ied, 'lds': lds})
 
 # -------------------------------обработка ld------------------------------
@@ -72,6 +72,11 @@ def show(request):
             object = LNobject.objects.get(data_object=object_id)
             objs.append(object)
             print('------------>', objs)
+
         return render(request, 'base_types/showlnobj.html', {'objs': objs, 'lntype':lntype})
 
+def lntypes(request):
+    lntypes = LogicNodesTypes.objects.all()
 
+
+    return render(request, 'base_types/lntypes.html', {'lntypes':lntypes})

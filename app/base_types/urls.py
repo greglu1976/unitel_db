@@ -6,5 +6,7 @@ urlpatterns = [
     path('reports/', views.reports),
     path('reports/getreport/', views.get_report),
     path('reports/show/', views.show),
+    path('lntypes/', views.lntypes),
+    path('lntypes/show/', views.show),
 
 ]

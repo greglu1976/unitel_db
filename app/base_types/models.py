@@ -125,7 +125,7 @@ class LNobject(models.Model):
         if self.dataset:
             return str(self.dataset)
         else:
-            return "<Чертеж>"
+            return "-"
 
 # --------------------LogicNodesTypes----------------------------------------
 class LogicNodesTypes(models.Model):
@@ -184,10 +184,10 @@ class Input(models.Model):
 # --------------------LogicNodeInstantiated----------------------------------------
 class LogicNodeInstantiated(models.Model):
     id = models.AutoField(primary_key=True)
-    short_name = models.CharField(max_length=64, verbose_name='Краткое имя', unique=True)
+    short_name = models.CharField(max_length=64, verbose_name='Краткое имя (БУ, ДЗТ)', unique=True)
     full_name = models.CharField(max_length=128, verbose_name='Полное имя', blank=True)
     ln_prefix = models.CharField(max_length=32, verbose_name='Префикс ЛУ', blank=True)
-    class_name = models.CharField(max_length=4, verbose_name='Класс')
+    class_name = models.CharField(max_length=4, verbose_name='Класс (PDIF)')
     instance = models.IntegerField(verbose_name='Номер экземпляра', blank=True, null=True)
     ln_type = models.ForeignKey(LogicNodesTypes, on_delete=models.CASCADE, verbose_name='Тип ЛУ', null=True)
     def __str__(self):
@@ -200,10 +200,21 @@ class LogicNodeInstantiated(models.Model):
 
     @property
     def get_instance(self):
+        if self.instance==-1:
+            return '(n)'
         if self.instance:
             return self.instance
         else:
             return "-"
+    @property
+    def get_instance_report(self):
+        if self.instance==-1:
+            return '(n)'
+        if self.instance:
+            return self.instance
+        else:
+            return ""
+
 
 # --------------------SwitchesAndLNs----------------------------------------
 class SwitchesAndLNs(models.Model):

@@ -194,6 +194,98 @@ def add_spec_row_table_reports(table, tuple2Add):  # Добавляем особ
     table.cell(leng - 1, 1)._tc.get_or_add_tcPr().append(shading_elm2)
 
 
+#
+# ТАБЛИЦЫ ДЛЯ ОТЧЕТА по уставкам
+#
+
+# по программным переключателям
+table_sg_sw = (Inches(2), Inches(7), Inches(3))  #задаем ширину столбцов
+def add_table_sg_sw(doc): # таблица программных переключателей
+    table = doc.add_table(rows=1, cols=3)
+
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Наименование'
+    hdr_cells[1].text = 'Пояснение'
+    hdr_cells[2].text = 'Состояния программных переключателей'
+
+    for i in range(0,3):
+        p = hdr_cells[i].paragraphs[0]
+        p.style = 'ДОК Таблица Заголовок'
+        set_cell_vertical_alignment(hdr_cells[i], align="center")
+        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
+    set_repeat_table_header(table.rows[0]) # повторение заголовка на след странице
+
+    table.style = 'Сетка таблицы51'
+    table.allow_autofit = False
+
+    for row in table.rows:
+        for idx, width in enumerate(table_sg_sw):
+            row.cells[idx].width = width
+    return table
+
+def add_row_table_sg_sw(table, tuple2Add):  # Добавляем строку со значениями в Таблицу выходных сигналов
+    row = table.add_row()
+    #leng=len(table.rows)
+
+    for idx in range(0, 3):
+        row.cells[idx].text = str(tuple2Add[idx])
+        #row.cells[idx].width = table_sg_sw[idx]
+        set_cell_vertical_alignment(row.cells[idx], align="center")
+
+    row.cells[0].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[0].paragraphs[0].style = 'ДОК Таблица Текст'
+    row.cells[1].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[1].paragraphs[0].style = 'ДОК Таблица Текст'
+    row.cells[2].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[2].paragraphs[0].style = 'ДОК Таблица Текст'
+
+    return table
+
+def add_row_table_sg_sw_empty(table, tuple2Add):  # отличия от обычной функции add_row_table_sg_sw - не ставит первый столбец как нумерованный текст
+    row = table.add_row()
+    for idx in range(0, 3):
+        row.cells[idx].text = str(tuple2Add[idx])
+        #row.cells[idx].width = table_sg_sw[idx]
+        set_cell_vertical_alignment(row.cells[idx], align="center")
+    row.cells[0].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[0].paragraphs[0].style = 'ДОК Таблица Текст' # вот здесь отличие !!!!!
+    row.cells[1].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[1].paragraphs[0].style = 'ДОК Таблица Текст'
+    row.cells[2].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[2].paragraphs[0].style = 'ДОК Таблица Текст'
+    return table
+
+def merge_table_sg_sw(table, act_row, count):
+    table.cell(act_row-1, 0).merge(table.cell(act_row-count, 0))
+    text = table.cell(act_row-1, 0).text.replace('\n','')
+    table.cell(act_row - 1, 0).text = text.strip()
+    row = table.rows[act_row - 1]
+    row.cells[0].paragraphs[0].style = 'ДОК Таблица Текст'
+    table.cell(act_row - 1, 1).merge(table.cell(act_row - count, 1))
+    text2 = table.cell(act_row - 1, 1).text.replace('\n','')
+    table.cell(act_row - 1, 1).text = text2.strip()
+    row.cells[1].paragraphs[0].style = 'ДОК Таблица Текст'
+    return table
+
+def merge_table_sg_sw_header(table):
+    num_row = len(table.rows)
+    table.cell(num_row-1, 0).merge(table.cell(num_row-1, 2))
+    text = table.cell(num_row-1, 0).text.replace('\n','')
+    table.cell(num_row - 1, 0).text = text.strip()
+    # после верхних манипуляций теряется стиль ячейки, прописываем его заново
+    row = table.rows[num_row-1]
+    row.cells[0].paragraphs[0].style = 'ДОК Таблица Текст Строгий'
+    return table
+
+def add_row_table_sg_sw_final(table): # добавляем финальную строчку в таблицу
+    row = table.add_row()
+    table.cell(len(table.rows)-1, 0).merge(table.cell(len(table.rows)-1, 2))
+    row.cells[0].text = '* - значение программного переключателя по умолчанию'
+    set_cell_vertical_alignment(row.cells[0], align="center")
+    row.cells[0].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+    row.cells[0].paragraphs[0].style = 'ДОК Таблица Текст' # вот здесь отличие !!!!!
+    return table
 
 
 

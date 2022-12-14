@@ -1,0 +1,40 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+    {% if lntypes %}
+
+    <h2 class="mt-4">Список типов логических узлов</h2>
+    <p>База данных содержит информацию по следующим типам логических узлов:</p>
+    <hr class="my-4">
+    <div class="container small">
+    <table class="table table-striped">
+                <thead>
+                    <tr>
+                      <th scope="col">Тип ЛУ</th>
+                      <th scope="col">Описание</th>
+                      <th scope="col">Примечание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in lntypes %}
+                    <tr>
+                        <td><a href="show/?name={{item.name}}&type=ln">{{item.name}}</a></td>
+                        <td>{{item.description}}</td>
+                        <td></td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+    <hr class="my-4">
+    <p><em>Примечание</em><br>При нажатии на обозначение типа логического узла генерируется отчет по данному типу.</p>
+    {% else %}
+    <h2 class="mt-4">В базе данных нет типов логических узлов :(</h2>
+    {% endif %}
+</main>
+
+{% endblock %}
