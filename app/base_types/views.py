@@ -52,7 +52,7 @@ def show(request):
             ln = LogicNodeInstantiated.objects.get(short_name=item.ln)
             #print(ln)
             lns.append(ln)
-
+        lns.sort(key=lambda x: x.class_name)
         return render(request, 'base_types/showldobj.html', {'ld':ld, 'lns': lns})
 
     # -------------------------------обработка ln------------------------------
@@ -72,7 +72,7 @@ def show(request):
             object = LNobject.objects.get(data_object=object_id)
             objs.append(object)
             print('------------>', objs)
-
+        objs.sort(key=lambda x: (str(x.cdc)[2], str(x.cdc)[0]),reverse=True)
         return render(request, 'base_types/showlnobj.html', {'objs': objs, 'lntype':lntype})
 
 def lntypes(request):

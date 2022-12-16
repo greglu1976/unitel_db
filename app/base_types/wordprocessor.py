@@ -9,6 +9,18 @@ from .tables import add_row_table_reports, add_table_reports, add_spec_row_table
 from .models import Cabinets, PhDLDconnections, LogicDevices, DataObjects, LDLNconnections, LogicNodeInstantiated, \
     LNtypeObjConnections, LNobject
 
+
+def return_abbr(func_group): # возвращаем абревиатуру для отчета из номера функц. группы
+    if func_group == 1:
+        return 'АС'
+    if func_group > 1 and func_group < 13:
+        return 'ПС1'
+    if func_group > 12 and func_group < 20:
+        return 'ПС2'
+    if func_group > 19 and func_group < 23:
+        return 'ОС'
+    return '-'
+
 def word_report(request, cab):
 
 # СОЗДАЕМ ОТЧЕТ
@@ -124,7 +136,7 @@ def word_report(request, cab):
             for row in dataframe.itertuples():
                 #print(row)
                 row_no_index = (str(row[1])+' / '+str(row[2])+': '+str(row[3]), str(row[4])+'/'+str(row[5])+str(row[6])
-                                +str(row[7])+'.'+str(row[8]), row[9], row[10], row[11], row[12], row[13], row[14])
+                                +str(row[7])+'.'+str(row[8]), row[9], row[10], return_abbr(row[11]), row[12], row[13], row[14])
                 add_row_table_reports(t1, row_no_index)
 
 # выводим таблицу с уставками
