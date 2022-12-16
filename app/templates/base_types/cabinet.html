@@ -1,0 +1,32 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+
+    <h2 class="mt-4">{{cabinet.name}}</h2>
+    <p>{{cabinet.description}}</p>
+    <hr class="my-4">
+        <div class="container small">
+            <a href="/cabinets/?name={{cabinet.name}}&type=cabinet">
+                <button type="button" class="btn btn-success">Отчет по сигналам MMS, уставкам и РАС</button>
+            </a>
+        </div>
+    <hr class="my-4">
+        <div class="container small">
+            <a href="/cabinets/?name={{cabinet.name}}&type=dxf">
+        <button type="button" class="btn btn-success">Нарисовать dxf</button>
+             </a>
+        </div>
+    <hr class="my-4">
+
+    <div class="alert alert-warning" role="alert">
+    Время генерации отчета по шкафу зависит от наполнения шкафа и может составлять несколько минут
+    </div>
+
+
+</main>
+
+{% endblock %}

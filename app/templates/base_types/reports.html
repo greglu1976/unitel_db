@@ -6,15 +6,15 @@
 <main class="container py-5">
     {% if cabinets %}
 
-    <h2 class="mt-4">Перечень шкафов</h2>
-    <p>База данных содержит информацию по следующим типам шкафов РЗА:</p>
+    <h2 class="mt-4">Перечень шкафов/отсеков</h2>
+    <p>База данных содержит информацию по следующим типам шкафов/отсеков РЗА:</p>
     <hr class="my-4">
     <div class="container small">
     <table class="table table-striped">
                 <thead>
                     <tr>
-                      <th scope="col">Обозначение шкафа</th>
-                      <th scope="col">Назначение шкафа</th>
+                      <th scope="col">Обозначение шкафа/отсека</th>
+                      <th scope="col">Назначение шкафа/отеска</th>
                       <th scope="col">ИЭУ1</th>
                       <th scope="col">ИЭУ2</th>
                       <th scope="col">ИЭУ3</th>
@@ -23,7 +23,7 @@
                 <tbody>
                     {% for item in cabinets %}
                     <tr>
-                        <td><a href="getreport/?name={{item.name}}&type=cabinet">ШЭТ {{item.name}}</a></td>
+                        <td><a href="cabinet/?name={{item.name}}&type=cabinet">{{item.name}}</a></td>
                         <td>{{item.description}}</td>
                         <td><a href="show/?name={{item.terminal1}}&type=ied">{{item.terminal1}}</a></td>
                         <td><a href="show/?name={{item.terminal2}}&type=ied">{{item.get_terminal2}}</a></td>
@@ -34,8 +34,7 @@
             </table>
     </div>
     <hr class="my-4">
-    <p><em>Примечание</em><br>При нажатии на обозначение шкафа генерируется отчет по шкафу.<br>
-    Нажатие на ИЭУ позволяет открыть страницу с перечнем логических устройств, входящих в состав данного шкафа.</p>
+
     {% else %}
     <h2 class="mt-4">В базе данных нет шкафов :(</h2>
     {% endif %}

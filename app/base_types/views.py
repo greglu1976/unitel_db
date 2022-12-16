@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from .models import Cabinets, Terminals, PhDLDconnections, LogicDevices, LogicNodesTypes, DataObjects, LDLNconnections, \
     LogicNodeInstantiated, LNobject, LNtypeObjConnections
 from .wordprocessor import word_report
-
+from .dxfprocessor import dxf_report
 
 def index(request):
     return render(request, 'base_types/main.html')
@@ -20,8 +20,19 @@ def get_report(request):
     type = request.GET.get('type')
     if type == 'cabinet':
         return word_report(request, cab)
-    else:
-        return HttpResponse('')
+    if type == 'dxf':
+        return dxf_report(request, cab)
+
+
+# показываем шкаф
+def cabinet(request):
+    cab = request.GET.get('name')
+    type = request.GET.get('type')
+    cabinet= Cabinets.objects.get(name=cab)
+    print('OK', cabinet.terminal1)
+    return render(request, 'base_types/cabinet.html', {'cabinet': cabinet})
+
+
 
 def show(request):
     name = request.GET.get('name')
