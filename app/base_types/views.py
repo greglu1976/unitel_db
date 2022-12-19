@@ -48,7 +48,7 @@ def show(request):
             obj = LogicDevices.objects.get(name=item.ld)
             #print(obj)
             lds.append(obj)
-        lds.sort(key=lambda x: x.fb_name)
+        lds.sort(key=lambda x: x.name)
         return render(request, 'base_types/showld.html', {'ied': ied, 'lds': lds})
 
 # -------------------------------обработка ld------------------------------
