@@ -2,7 +2,14 @@ from django.contrib import admin
 
 from .models import Cabinets, PhDLDconnections, Terminals, LogicDevices, LogicNodeInstantiated, LogicNodesTypes, \
     LNobject, CDCs, DataObjects, Statuses, Datasets, Signals, ClueAttrs, LDLNconnections, InputsAndLNs, \
-    SwitchesAndLNs, Input, Switch, LNtypeObjConnections
+    SwitchesAndLNs, Input, Switch, LNtypeObjConnections, SG_modes
+
+class SG_modesAdmin(admin.ModelAdmin):
+    save_as = True
+    list_display = ('name',)
+    list_filter = ('name',)
+admin.site.register(SG_modes,SG_modesAdmin)
+
 
 class LNtypeObjConnectionsAdmin(admin.ModelAdmin):
     save_as = True
@@ -85,7 +92,7 @@ admin.site.register(LogicNodesTypes, LogicNodesTypesAdmin)
 
 class LNobjectAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('data_object','cdc', 'signal', 'status', 'clue_attr', 'cus', 'rdu', 'ras', 'dataset', 'sgras_name',  'signal_type', 'signal_number')
+    list_display = ('data_object','cdc', 'signal', 'status', 'clue_attr', 'cus', 'rdu', 'ras', 'dataset', 'sgras_name','sg_modes', 'signal_type', 'signal_number')
     list_filter = ('data_object',)
 admin.site.register(LNobject, LNobjectAdmin)
 

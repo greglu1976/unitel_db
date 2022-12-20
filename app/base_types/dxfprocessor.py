@@ -14,8 +14,9 @@ def dxf_report(request, cab):
     #doc.saveas("test.dxf")
 
     # СОХРАНЕНИЕ ДОКУМЕНТА
+
     bio = io.BytesIO()
-    document.save(bio)  # save to memory stream
+    document.write(bio)  # save to memory stream
     length = bio.tell()
     print(length, '++++++++++++++++++')
     bio.seek(0)  # rewind the stream

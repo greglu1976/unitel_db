@@ -227,7 +227,7 @@ def add_table_sg_sw(doc): # таблица программных переклю
 def add_row_table_sg_sw(table, tuple2Add):  # Добавляем строку со значениями в Таблицу выходных сигналов
     row = table.add_row()
     #leng=len(table.rows)
-
+    print('tuple=========', tuple2Add)
     for idx in range(0, 3):
         row.cells[idx].text = str(tuple2Add[idx])
         #row.cells[idx].width = table_sg_sw[idx]

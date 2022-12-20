@@ -36,7 +36,7 @@ def render_report(document, table_name, ied_cabinet, cab):
 
     # датафрейм для генерации уставок
     df_sg = pd.DataFrame(
-        columns=['_ru_ld_name', '_ru_ln_name', '_sg_name', '_sg_desc', '_sg_spg_conds', '_cdc', 'weight'])
+        columns=['_ru_ld_name', '_ru_ln_name', '_sg_name', '_sg_desc', '_sg_spg_conds', '_cdc', '_sg_modes', 'weight'])
 
     # датафрейм для рас
     df_ras = pd.DataFrame(
@@ -64,6 +64,7 @@ def render_report(document, table_name, ied_cabinet, cab):
                 _en_signal = str(obj.ln_obj).split('_')[0]  # отрезаем часть после подчеркивания
                 obj_obj = LNobject.objects.get(pk=obj.ln_obj_id)
                 _status = obj_obj.status
+                _cdc = obj_obj.cdc
                 _clue_attr = obj_obj.clue_attr
                 _func_group = obj_obj.func_group
                 _cus = obj_obj.cus
@@ -74,7 +75,8 @@ def render_report(document, table_name, ied_cabinet, cab):
                 _sgras_name = obj_obj.sgras_name
                 _dxf_signal_type = obj_obj.signal_type
                 _dxf_signal_number = obj_obj.signal_number
-                _cdc = obj_obj.cdc
+                _sg_modes = obj_obj.sg_modes
+
                 if _dataset != "-":  # если датасет не пустой добавляем строчку в датафрейм
                     datasets.add(_dataset)
                     df.loc[len(df.index)] = [_ru_ld_name, _ru_ln_name, _ru_signal, _en_ld_name, _prefix, _ln,
@@ -90,8 +92,8 @@ def render_report(document, table_name, ied_cabinet, cab):
                     if str(_cdc) == 'SPG' or str(_cdc) == 'ENG':  # чтобы переключатели вниз отсортировались
                         weight = 2
                     df_sg.loc[len(df_sg.index)] = [_ru_ld_name, _ru_ln_name, _sgras_name, _ru_signal, _status, _cdc,
-                                                   weight]
-                    print('>', _ru_ld_name, _ru_ln_name, _sgras_name, _ru_signal, _status, _cdc, weight)
+                                                   _sg_modes, weight]
+                    #print('>', _ru_ld_name, _ru_ln_name, _sgras_name, _ru_signal, _status, _cdc, weight)
 
                 # датафрейм для РАС
                 if str(_ras) in ('+', 'П'):
@@ -116,7 +118,7 @@ def render_report(document, table_name, ied_cabinet, cab):
 
         # dataframe = dataframe.sort_values(by=['_func_group']) # сортируем по функциональной группе
         dataframe = dataframe.sort_values(
-            by=['_func_group', '_en_ld_names', '_ln', '_en_signal'])  # сортируем по функциональной группе
+            by=['_func_group', '_en_ld_names', '_ln', '_instance', '_en_signal'])  # сортируем по функциональной группе
         # print('вторая часть марлезонского балета')
         # dataframe = dataframe.reset_index(drop=True)
         for row in dataframe.itertuples():
@@ -131,7 +133,7 @@ def render_report(document, table_name, ied_cabinet, cab):
         p2 = document.add_paragraph('Основные параметры функций '+table_name+' '+cab)
         p2.style = 'ДОК Таблица Название'
         t2 = add_table_sg_sw(document)
-        df_sg = df_sg.sort_values(by=['weight', '_ru_ld_name', '_ru_ln_name'])  # сортируем по весу '_ru_ld_name', '_ru_ln_name'
+        df_sg = df_sg.sort_values(by=['_ru_ld_name', '_ru_ln_name', 'weight', '_sg_name'])  # сортируем по весу '_ru_ld_name', '_ru_ln_name'
         # df_sg = df_sg.reset_index(drop=True)
         func_desc = ''  # обозначение функции и узла в строчке, меняется , когда изменяется либо функция либо узел либо то и другое
         isPG = False  # флаг наличия программных ключей  в уставках, что бы добавить примечания, относящиеся к программным ключам
@@ -147,7 +149,7 @@ def render_report(document, table_name, ied_cabinet, cab):
 
             if str(row[6]) in OBJ_SW:
                 isPG = True
-                conds_tuple = str(row[5]).split('/')  # теперь в conds_tuple все состояния переключателя
+                conds_tuple = str(row[7]).split('/')  # теперь в conds_tuple все состояния переключателя
 
                 if func_desc != row[1] + row[2]:
                     func_desc = row[1] + row[2]
@@ -157,8 +159,10 @@ def render_report(document, table_name, ied_cabinet, cab):
                 for item in conds_tuple:
                     if count_item == 1:
                         add_row_table_sg_sw(t2, (row[3], row[4], item.strip()))
+                        #print('====================', row[3], row[4], item.strip())
                     else:
                         add_row_table_sg_sw_empty(t2, ('', '', item.strip()))
+                        #print('=================+++','', '', item.strip())
                     count_item += 1
                 if len(conds_tuple) > 1:  # если количество состояний больше одного, то объединяем ячейки
                     rows = t2.rows

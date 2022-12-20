@@ -80,6 +80,19 @@ class Signals(models.Model):
         verbose_name_plural = 'Перечни сигналов'
         ordering = ['name']
 
+# --------------------SG_modes----------------------------------------
+class SG_modes(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=128, verbose_name='Статусы програмного переключателя', unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Программный переключатель'
+        verbose_name_plural = 'Программные переключатели'
+        ordering = ['name']
+
 # -------------------------------------------------------------------
 # --------------------LNobject----------------------------------------
 class LNobject(models.Model):
@@ -109,6 +122,7 @@ class LNobject(models.Model):
     ras = models.CharField(max_length=1, choices=RAS_CHOICES, default='-', verbose_name='РАС')
     dataset = models.ForeignKey(Datasets, on_delete=models.CASCADE, verbose_name='Датасет', blank=True, null=True)
     sgras_name = models.CharField(max_length=64, verbose_name='Обозначение РАС/Уставка', blank=True)
+    sg_modes= models.ForeignKey(SG_modes, on_delete=models.PROTECT, verbose_name='Состояние программного ключа', blank=True, null=True) # добавил состояния прогрм ключа
     signal_type = models.CharField(max_length=32, choices=SIG_CHOICES, default='-', verbose_name='Тип сигнала (чертеж)')
     signal_number = models.IntegerField(verbose_name='Номер выхода (чертеж)', default=0)
 
@@ -126,6 +140,14 @@ class LNobject(models.Model):
             return str(self.dataset)
         else:
             return "-"
+
+    @property
+    def get_sg_modes(self):
+        if self.sg_modes:
+            return str(self.sg_modes)
+        else:
+            return ""
+
 
 # --------------------LogicNodesTypes----------------------------------------
 class LogicNodesTypes(models.Model):
