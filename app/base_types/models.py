@@ -122,7 +122,7 @@ class LNobject(models.Model):
     ras = models.CharField(max_length=1, choices=RAS_CHOICES, default='-', verbose_name='РАС')
     dataset = models.ForeignKey(Datasets, on_delete=models.CASCADE, verbose_name='Датасет', blank=True, null=True)
     sgras_name = models.CharField(max_length=256, verbose_name='Обозначение РАС/Уставка', blank=True)
-    sg_modes= models.ForeignKey(SG_modes, on_delete=models.PROTECT, verbose_name='Состояние программного ключа', blank=True, null=True) # добавил состояния прогрм ключа
+    sg_modes = models.ForeignKey(SG_modes, on_delete=models.PROTECT, verbose_name='Состояние программного ключа', blank=True, null=True) # добавил состояния прогрм ключа
     signal_type = models.CharField(max_length=32, choices=SIG_CHOICES, default='-', verbose_name='Тип сигнала (чертеж)')
     signal_number = models.IntegerField(verbose_name='Номер выхода (чертеж)', default=0)
 

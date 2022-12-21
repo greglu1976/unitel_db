@@ -22,9 +22,6 @@ CHANGES = {
 
 }
 
-
-
-
 def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], switches=[], func_name=('test block', '', False), fb_name = 'test fb'):
     """ функция для прорисовки одиночного ЛУ, x,y координаты верхней левой точки """
     # выставляем длину надписи выхода для АПТ и прочих защит
@@ -101,7 +98,8 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
 
         # дополнительные условия
         # например сигнал Индикация режима работы (Состояние) заменить на рисунке на состояние
-        signal_out = CHANGES.get(output_item.signal, output_item.signal)
+        signal_out = str(CHANGES.get(output_item.signal, output_item.signal))
+        #print('signal_out==========', signal_out)
         # очищаем сигнал от содержимого в скобках, чтобы вывести внутри функции
         signal_out_no_braces = re.sub(r'\([^()]*\)', '', signal_out)
         # если сигнал есть управляющий, то не рисуем
@@ -128,9 +126,9 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
                          (x + BLOCK_LENGTH + OUTPUT_LINE_LENGTH, -y - n * DISTANCE_BTW_PUTS - MARGIN_PUT),
                          dxfattribs={'layer': layer})
             #output_text = fb_name +' / '+ func_name[0]+': '+output_item[2] здесь имя блока бралось напрямую
-            output_text = output_item[0] + ' / ' + output_item[1] + ': ' + signal_out #output_item[2] # используем текст с заменой из словаря CHANGES
-            if output_item[15] != 0 and RENDER_SIGNAL_NUMBERS:
-                output_text +=' ['+str("{:04d}".format(output_item[15])) + ']'
+            output_text = func_name[3] + ' / ' + func_name[0] + ': ' + signal_out #output_item[2] # используем текст с заменой из словаря CHANGES
+            if output_item.signal_number != 0 and RENDER_SIGNAL_NUMBERS:
+                output_text +=' ['+str("{:04d}".format(output_item.signal_number)) + ']'
             outtext = msp.add_mtext(
                 output_text,
                 dxfattribs={
@@ -143,9 +141,9 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
             outtext.dxf.defined_height = 4
 
             # пробуем вывести номер справа в слое Сигнатура
-            if output_item[15] != 0 and RENDER_SIGNAL_NUMBERS_RIGHT:
+            if output_item.signal_number != 0 and RENDER_SIGNAL_NUMBERS_RIGHT:
                 outtext = msp.add_mtext(
-                    str("{:04d}".format(output_item[15])),
+                    str("{:04d}".format(output_item.signal_number)),
                     dxfattribs={
                         "layer": 'Сигнатура',
                         "style": "Narrow"
@@ -174,7 +172,7 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
             outtext2.dxf.defined_height = 4
             # выводим номер
             outnum = msp.add_mtext(
-                str("{:04d}".format(output_item[15])),
+                str("{:04d}".format(output_item.signal_number)),
                 dxfattribs={
                     "layer": 'Сигнатура',
                     "style": "Narrow"
@@ -185,9 +183,8 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
             outnum.dxf.width = 15
             outnum.dxf.defined_height = 4
             pointer_output = pointer_output + 1
-
-
 ### КОНЕЦ ЭКСПЕРИМЕНТАЛЬНОЙ ФИЧИ
+
 
     # выставляем переключатели
     row = -1
@@ -197,9 +194,14 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
             coord_x = x + BLOCK_LENGTH/2
         else:
             row = row + 1
-        msp.add_blockref(switch_item[0], (coord_x + 1, -y - rel_pos_start_swblock - row * DISTANCE_BTW_PUTS - MARGIN_PUT))
-        switch_text = switch_item[1]
-        if switch_item[2] == '*': # если переключатель опциональный, то заключаем к скобки
+
+        sw_type = 'SW.2'
+        if len(str(switch_item.sg_modes).split('/'))>2:
+            sw_type = 'SW.3'
+
+        msp.add_blockref(sw_type, (coord_x + 1, -y - rel_pos_start_swblock - row * DISTANCE_BTW_PUTS - MARGIN_PUT))
+        switch_text = switch_item.sgras_name
+        if not switch_item.dataset: # если переключатель опциональный, то заключаем к скобки, не в датасете
             switch_text = f"\{{ " + switch_text + f" \}}"
         swtext = msp.add_mtext(
             switch_text,
@@ -210,30 +212,3 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
         swtext.set_location(insert=(coord_x + 7, -y - rel_pos_start_swblock - row * DISTANCE_BTW_PUTS - MARGIN_PUT, 0),
                              rotation=0, attachment_point=4)
     return block_height, pointer_output
-'''
-# ТЕСТОВАЯ ПРОВЕРКА
-format_dxf = 'apt' # как пример
-DISTANCE_BTW_FB = 320
-x = 0
-y = 0
-pointers = [0, 0, 0, 0] # координаты по х (жестко задаются): аналог, ммс асу, гус , ммс фк. Координаты по У - они меняются
-pointer_output = 0
-
-# func_name=(short_name = 'test block', full_name = 'dfdf', isOptional = False)
-
-doc = ezdxf.readfile('templates/template.dxf')
-msp = doc.modelspace()
-
-func_name = 'БУ_ДТЗ'
-inputs = Input.objects.all().filter(ln_inst=func_name)
-for input in inputs:
-    print(input.name)
-
-testinputs = (('C01', 'None', '', 0, 'АСУ / Режим работы АРН АТ (ввод/вывод)'),)
-testoutputs = (('АРН АТ', 'БУ', 'Индикация состояния', 'ATATCC', '', 'LLN0', 'Beh', '{Beh}', 'ENS', 22, '*', '', '', '', '', 0, 'dsrpt_DT'),)
-testswitches = (('SW.3', 'Направленность', ' '),)
-draw_func(msp,pointer_output, format_dxf, x=50, y=100, func_name=('test block', 'dfdf', False), inputs=testinputs, outputs=testoutputs, switches=testswitches)
-
-# Save the DXF document.
-doc.saveas("test___.dxf")
-'''
