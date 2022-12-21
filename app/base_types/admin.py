@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Cabinets, PhDLDconnections, Terminals, LogicDevices, LogicNodeInstantiated, LogicNodesTypes, \
-    LNobject, CDCs, DataObjects, Statuses, Datasets, Signals, ClueAttrs, LDLNconnections, InputsAndLNs, \
+    LNobject, CDCs, DataObjects, Statuses, Datasets, Signals, ClueAttrs, LDLNconnections, \
     SwitchesAndLNs, Input, Switch, LNtypeObjConnections, SG_modes
 
 class SG_modesAdmin(admin.ModelAdmin):
@@ -16,13 +16,13 @@ class LNtypeObjConnectionsAdmin(admin.ModelAdmin):
     list_display = ('ln_type', 'ln_obj')
     list_filter = ('ln_type',)
 admin.site.register(LNtypeObjConnections,LNtypeObjConnectionsAdmin)
-
+'''
 class InputsAndLNsAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('input', 'ln')
     list_filter = ('input',)
 admin.site.register(InputsAndLNs,InputsAndLNsAdmin)
-
+'''
 class SwitchesAndLNsAdmin(admin.ModelAdmin):
     save_as = True
     list_display = ('switch', 'ln')
@@ -31,8 +31,8 @@ admin.site.register(SwitchesAndLNs,SwitchesAndLNsAdmin)
 
 class InputAdmin(admin.ModelAdmin):
     save_as = True
-    list_display = ('name', 'sw_type', 'sw_name', 'description')
-    list_filter = ('name',)
+    list_display = ('ln_inst', 'name', 'number', 'sw_type', 'sw_name', 'description')
+    list_filter = ('ln_inst',)
 admin.site.register(Input,InputAdmin)
 
 class SwitchAdmin(admin.ModelAdmin):

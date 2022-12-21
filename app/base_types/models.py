@@ -121,7 +121,7 @@ class LNobject(models.Model):
     rdu = models.CharField(max_length=1, choices=CUS_CHOICES, default='-', verbose_name='РДУ')
     ras = models.CharField(max_length=1, choices=RAS_CHOICES, default='-', verbose_name='РАС')
     dataset = models.ForeignKey(Datasets, on_delete=models.CASCADE, verbose_name='Датасет', blank=True, null=True)
-    sgras_name = models.CharField(max_length=64, verbose_name='Обозначение РАС/Уставка', blank=True)
+    sgras_name = models.CharField(max_length=256, verbose_name='Обозначение РАС/Уставка', blank=True)
     sg_modes= models.ForeignKey(SG_modes, on_delete=models.PROTECT, verbose_name='Состояние программного ключа', blank=True, null=True) # добавил состояния прогрм ключа
     signal_type = models.CharField(max_length=32, choices=SIG_CHOICES, default='-', verbose_name='Тип сигнала (чертеж)')
     signal_number = models.IntegerField(verbose_name='Номер выхода (чертеж)', default=0)
@@ -183,25 +183,7 @@ class Switch(models.Model):
         ordering = ['sw_type']
 
 
-# --------------------Input----------------------------------------
-class Input(models.Model):
-    SW_CHOICES = [
-        ('SW.2', 'SW.2'),
-        ('SW.2', 'SW.2'),
-        ('-', '-')
-    ]
-    name = models.CharField(max_length=4, verbose_name='Обозначение входа (напр.: С1, А4)')
-    sw_type = models.CharField(max_length=4, choices=SW_CHOICES, default='-', verbose_name='Тип переключателя')
-    sw_name = models.CharField(max_length=32, verbose_name='Обозначение переключателя', blank=True)
-    description = models.CharField(max_length=128, verbose_name='Описание входа (напр.: АСУ / Режим работы)')
 
-    def __str__(self):
-        return self.description
-
-    class Meta:
-        verbose_name = 'Вход'
-        verbose_name_plural = 'Входы'
-        ordering = ['description']
 
 # --------------------LogicNodeInstantiated----------------------------------------
 class LogicNodeInstantiated(models.Model):
@@ -237,6 +219,29 @@ class LogicNodeInstantiated(models.Model):
         else:
             return ""
 
+# --------------------Input----------------------------------------
+class Input(models.Model):
+    SW_CHOICES = [
+        ('SW.2', 'SW.2'),
+        ('SW.3', 'SW.3'),
+        ('-', '-')
+    ]
+    name = models.CharField(max_length=4, verbose_name='Обозначение входа (напр.: С1, А4)')
+    number = models.IntegerField(verbose_name='Номер входа', default=0)
+    sw_type = models.CharField(max_length=4, choices=SW_CHOICES, default='-', verbose_name='Тип переключателя')
+    sw_name = models.CharField(max_length=32, verbose_name='Обозначение переключателя', blank=True)
+    description = models.CharField(max_length=128, verbose_name='Описание входа (напр.: АСУ / Режим работы)')
+    ln_inst = models.ForeignKey(LogicNodeInstantiated, on_delete=models.CASCADE, verbose_name='Экземпляр ЛУ к которому привязан вход', null=True)
+
+    def __str__(self):
+        return self.description
+
+    class Meta:
+        verbose_name = 'Вход'
+        verbose_name_plural = 'Входы'
+        ordering = ['description']
+
+
 
 # --------------------SwitchesAndLNs----------------------------------------
 class SwitchesAndLNs(models.Model):
@@ -251,7 +256,7 @@ class SwitchesAndLNs(models.Model):
         verbose_name = 'Переключатель в составе ФБ'
         verbose_name_plural = 'Переключатели в составе ФБ'
         ordering = ['switch']
-
+'''
 # --------------------InputsAndLNs----------------------------------------
 class InputsAndLNs(models.Model):
     id = models.AutoField(primary_key=True)
@@ -266,7 +271,7 @@ class InputsAndLNs(models.Model):
         verbose_name_plural = 'Входы составе ФБ'
         ordering = ['input']
 
-'''
+
 # --------------------LNobjConnections--УДАЛИТЬ--------------------------------------
 class LNobjConnections(models.Model):
     id = models.AutoField(primary_key=True)

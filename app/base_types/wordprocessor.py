@@ -98,8 +98,8 @@ def render_report(document, table_name, ied_cabinet, cab):
                 # датафрейм для РАС
                 if str(_ras) in ('+', 'П'):
                     rows = 1
-                    if str(_cdc) in ('ACT', 'ACD') and len(_clue_attr.split(',')) > 1:
-                        rows = 3
+                    #if str(_cdc) in ('ACT', 'ACD') and len(_clue_attr.split(',')) > 1:
+                        #rows = 3
 
     # выводим таблицу с ММС
     datasets = list(datasets)
