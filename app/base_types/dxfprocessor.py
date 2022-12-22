@@ -1,6 +1,7 @@
 import ezdxf
 import io
 from django.http import HttpResponse
+from django.http import FileResponse
 from .models import Cabinets, PhDLDconnections, LogicDevices, Input, LDLNconnections, LogicNodeInstantiated, \
     LNtypeObjConnections, LNobject
 from .dxfdraw import draw_func
@@ -20,7 +21,7 @@ from .dxfconfig import RENDER_SIGNAL_NUMBERS, RENDER_SIGNAL_NUMBERS_RIGHT
 
 # выбираем логические блоки, которые нужно нарисовать
 def render_dxf(doc, msp, ied, cab):
-    format_dxf = 'prot' # как пример
+    format_dxf = 'apt' # как пример
     DISTANCE_BTW_FB = 320
     x = 0
     y = 0
@@ -62,7 +63,20 @@ def render_dxf(doc, msp, ied, cab):
             coord_y = l + DISTANCE_BTW_FUNCS + coord_y
 
         # ПРОСТАВЛЯЕМ ВХОДЫ У ФУНКЦ БЛОКА
-        print('all_inputs', all_inputs)
+
+        # отладочная часть, вроде работает - оставлена пока как есть----------------------
+        #print('all_inputs', all_inputs)
+        no_dubs_inputs_name = []
+        no_dubs_inputs = []
+        for input in all_inputs:
+            print('input name: ', input.name)
+            if not input.name in no_dubs_inputs_name:
+                no_dubs_inputs.append(input)
+                no_dubs_inputs_name.append(input.name)
+        all_inputs = no_dubs_inputs
+        all_inputs.sort(key=lambda x: x.name)
+        # отладочная часть-----------------------------------------------------------------
+
         coord_input = y
         for input in all_inputs:
             msp.add_line((x, - coord_input - START_FB_INPUTS), (x - INPUT_LINE_LENGTH, - coord_input - START_FB_INPUTS),
@@ -299,22 +313,6 @@ def dxf_report(request, cab):
     if ied1:
         render_dxf(doc, msp, ied1, cab)
     # Save the DXF document.
-    doc.saveas("test.dxf")
-    # СОХРАНЕНИЕ ДОКУМЕНТА
+    doc.saveas("reports/dxf/test.dxf")
 
-    bio = io.StringIO()
-    doc.write(bio)  # save to memory stream
-    length = bio.tell()
-    #print(length, '++++++++++++++++++')
-    bio.seek(0)  # rewind the stream
-
-    response = HttpResponse(
-        bio.getvalue(),  # use the stream's contents
-        content_type="image/x-dxf",
-    )
-
-    response["Content-Disposition"] = 'attachment; filename = {0}'.format(cab.split(' ')[1] + ".dxf")
-    response["Content-Encoding"] = "UTF-8"
-    response['Content-Length'] = length
-
-    return response
+    return FileResponse(open("reports/dxf/test.dxf", 'rb')) # возвращаем сгенерированный файл dxf

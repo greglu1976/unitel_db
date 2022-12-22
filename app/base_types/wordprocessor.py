@@ -1,7 +1,7 @@
 from docx import Document
 from docx.shared import Inches
 import io
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 
 import pandas as pd
 
@@ -211,22 +211,21 @@ def word_report(request, cab):
         render_report(document, table_header_name, ied3, cab)
 #-----------------------------------------------------------------------------------------------------------------------
 
-
+    document.save('reports/doc/test.docx')
 # СОХРАНЕНИЕ ДОКУМЕНТА
-    bio = io.BytesIO()
-    document.save(bio) # save to memory stream
-    length = bio.tell()
-    print(length, '++++++++++++++++++')
-    bio.seek(0) # rewind the stream
+    #bio = io.BytesIO()
+    #document.save(bio) # save to memory stream
+    #length = bio.tell()
+    #print(length, '++++++++++++++++++')
+    #bio.seek(0) # rewind the stream
+    #response = HttpResponse(
+            #bio.getvalue(),  # use the stream's contents
+            #content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        #)
 
-    response = HttpResponse(
-            bio.getvalue(),  # use the stream's contents
-            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        )
-
-    response["Content-Disposition"] = 'attachment; filename = {0}'.format(cab.split(' ')[1]+".docx")
-    response["Content-Encoding"] = "UTF-8"
-    response['Content-Length'] = length
+    #response["Content-Disposition"] = 'attachment; filename = {0}'.format(cab.split(' ')[1]+".docx")
+    #response["Content-Encoding"] = "UTF-8"
+    #response['Content-Length'] = length
     
-    return response
+    return FileResponse(open('reports/doc/test.docx', 'rb')) # возвращаем сгенерированный файл dxf
     
