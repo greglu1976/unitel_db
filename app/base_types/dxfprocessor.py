@@ -1,5 +1,5 @@
 import ezdxf
-import io
+import re
 from django.http import HttpResponse
 from django.http import FileResponse
 from .models import Cabinets, PhDLDconnections, LogicDevices, Input, LDLNconnections, LogicNodeInstantiated, \
@@ -275,14 +275,16 @@ def render_dxf(doc, msp, ied, cab):
         # КОНЕЦ ЭКСПЕРИМЕНТАЛЬНОЙ ФИЧИ
 
 
-
-
         # рисуем прямоугольник функционального блока
         points = [(x, -y), (FBLOCK_LENGTH + x, -y), (FBLOCK_LENGTH + x, - coord_y + DISTANCE_BTW_FUNCS - MARGIN_BOTTOM),
                   (x, - coord_y + DISTANCE_BTW_FUNCS - MARGIN_BOTTOM), (x, -y)]
         msp.add_lwpolyline(points, dxfattribs={'layer': 'Основная'}, close=True)
         # выставляем имя функционального блока и его описание
-        fb_text_name = ld.fb_name + ' (' + ld.description + ')'
+
+        short_fb_name = str(ld.fb_name).split('_')[0] # убираем из короткого имени после подчеркивания все
+        desc_fb_name = re.sub(r'\([^()]*\)', '', ld.description) # убираем из описания информацию в скобках
+
+        fb_text_name = short_fb_name + ' (' + desc_fb_name + ')'
         mtext = msp.add_mtext(
             fb_text_name,
             dxfattribs={

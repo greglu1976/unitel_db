@@ -1,7 +1,7 @@
 import ezdxf
 import math
 import re
-from .dxfconfig import RENDER_SIGNAL_NUMBERS, RENDER_SIGNAL_NUMBERS_RIGHT
+from .dxfconfig import RENDER_SIGNAL_NUMBERS, RENDER_SIGNAL_NUMBERS_RIGHT, CHANGES
 
 
 
@@ -14,13 +14,7 @@ OUTPUT_LINE_LENGTH = 100 # длина линии выхода была 80
 #TEXT_OUTPUT_LENGTH = 45 # длина надписи выхода TEXT_OUTPUT_LENGTH = 60 - для АПТ - перенесено в файл настроек 18.10.22
 DESC_OUTPUT_LENGTH = 100 # длина надписи пояснения выхода
 
-# словарь замен на рисунке
 
-CHANGES = {
-    'Индикация режима работы (Состояние)':'Состояние',
-    'Индикация режима работы': 'Состояние',
-
-}
 
 def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], switches=[], func_name=('test block', '', False), fb_name = 'test fb'):
     """ функция для прорисовки одиночного ЛУ, x,y координаты верхней левой точки """
@@ -98,7 +92,7 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
 
         # дополнительные условия
         # например сигнал Индикация режима работы (Состояние) заменить на рисунке на состояние
-        signal_out = str(CHANGES.get(output_item.signal, output_item.signal))
+        signal_out = CHANGES.get(str(output_item.signal), str(output_item.signal))
         #print('signal_out==========', signal_out)
         # очищаем сигнал от содержимого в скобках, чтобы вывести внутри функции
         signal_out_no_braces = re.sub(r'\([^()]*\)', '', signal_out)
@@ -126,7 +120,7 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
                          (x + BLOCK_LENGTH + OUTPUT_LINE_LENGTH, -y - n * DISTANCE_BTW_PUTS - MARGIN_PUT),
                          dxfattribs={'layer': layer})
             #output_text = fb_name +' / '+ func_name[0]+': '+output_item[2] здесь имя блока бралось напрямую
-            output_text = func_name[3] + ' / ' + func_name[0] + ': ' + signal_out #output_item[2] # используем текст с заменой из словаря CHANGES
+            output_text = func_name[3].split('_')[0] + ' / ' + func_name[0] + ': ' + signal_out #output_item[2] # используем текст с заменой из словаря CHANGES и отбрасываем после _
             if output_item.signal_number != 0 and RENDER_SIGNAL_NUMBERS:
                 output_text +=' ['+str("{:04d}".format(output_item.signal_number)) + ']'
             outtext = msp.add_mtext(
