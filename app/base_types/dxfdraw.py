@@ -45,7 +45,11 @@ def draw_func(msp, pointer_output, format_dxf, x=0, y=0, inputs=[], outputs=[], 
     msp.add_lwpolyline(points, dxfattribs={'layer': 'Основная'}, close=True)
 
     # выставляем имя блока
+
     func_name_text = func_name[1] +' (' + str(func_name[0]) + ')'
+    if str(func_name[1]) == str(func_name[0]):
+        func_name_text = func_name[1]
+
     if func_name[2]:
         func_name_text = f"\{{ " + func_name_text + f" \}}" # иначе dxf не воспринимает {} скобки, надо экранировать
     mtext = msp.add_mtext(

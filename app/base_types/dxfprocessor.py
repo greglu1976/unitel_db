@@ -40,14 +40,14 @@ def render_dxf(doc, msp, ied, cab):
         print('*******', ld.fb_name)
 
         all_inputs = [] # попробуем сюда собрать все входы
-        ldln_conns = LDLNconnections.objects.all().filter(ld=item.ld)
+        ldln_conns = LDLNconnections.objects.all().filter(ld=item.ld).order_by('ln') # хрен знает, работает этот фильтр или нет....
         for ldln_conn in ldln_conns:
             _ru_ln_name = str(ldln_conn.ln).split('_')[0]  # отрезаем часть после подчеркивания
             #print('===========>>>', _ru_ln_name)
             got_ln = LogicNodeInstantiated.objects.get(short_name=ldln_conn.ln)  # ищем тип ЛУ, чтобы вывести его объекты
             inputs = Input.objects.all().filter(ln_inst=ldln_conn.ln).order_by('name')
             all_inputs.extend(inputs)
-            lnobj_conns = LNtypeObjConnections.objects.all().filter(ln_type=got_ln.ln_type)
+            lnobj_conns = LNtypeObjConnections.objects.all().filter(ln_type=got_ln.ln_type).order_by('ln_obj') # хрен знает, работает этот фильтр или нет....
             objs = []
             switches = []
             for obj in lnobj_conns:
@@ -285,6 +285,7 @@ def render_dxf(doc, msp, ied, cab):
         desc_fb_name = re.sub(r'\([^()]*\)', '', ld.description) # убираем из описания информацию в скобках
 
         fb_text_name = short_fb_name + ' (' + desc_fb_name + ')'
+
         mtext = msp.add_mtext(
             fb_text_name,
             dxfattribs={
