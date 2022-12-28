@@ -188,10 +188,10 @@ class Switch(models.Model):
 # --------------------LogicNodeInstantiated----------------------------------------
 class LogicNodeInstantiated(models.Model):
     id = models.AutoField(primary_key=True)
-    short_name = models.CharField(max_length=64, verbose_name='Краткое имя (БУ, ДЗТ)', unique=True)
+    short_name = models.CharField(max_length=64, verbose_name='Краткое имя (например: БУ или ДЗТ)', unique=True)
     full_name = models.CharField(max_length=128, verbose_name='Полное имя', blank=True)
     ln_prefix = models.CharField(max_length=32, verbose_name='Префикс ЛУ', blank=True)
-    class_name = models.CharField(max_length=4, verbose_name='Класс (PDIF)')
+    class_name = models.CharField(max_length=4, verbose_name='Класс (например: PDIF)')
     instance = models.IntegerField(verbose_name='Номер экземпляра', blank=True, null=True)
     ln_type = models.ForeignKey(LogicNodesTypes, on_delete=models.CASCADE, verbose_name='Тип ЛУ', null=True)
     def __str__(self):

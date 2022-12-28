@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+        {% if objs %}
+        <h2 class="mt-4">{{fb}}</h2>
+        <p><strong>Потомок {{lntype}}</strong></p>
+        <hr class="my-4">
+        <p>входит в состав следующих логических устройств (функциональных блоков):</p>
+        <div class="container small">
+         <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                  <th scope="col">Логическое устройство</th>
+                  <th scope="col">Функциональный блок</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in objs %}
+                    <td>{{item.name}}</td>
+                    <td>{{item.fb_name}}</td>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        </div>
+        <hr class="my-4">
+
+        {% else %}
+        <h2 class="mt-4">"{{fb}}" не входит в состав ни одного функционального блока =(</h2>
+        {% endif %}
+
+</main>
+
+{% endblock %}

@@ -9,5 +9,6 @@ urlpatterns = [
     path('lntypes/', views.lntypes),
     path('lntypes/show/', views.show),
     path('reports/cabinet/', views.cabinet),
+    path('checkconns/', views.connslntype),
 
 ]

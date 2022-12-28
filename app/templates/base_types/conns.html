@@ -1,0 +1,40 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container py-5">
+
+        {% if ln_inst %}
+        <h2 class="mt-4">{{ln_type}}</h2>
+        <hr class="my-4">
+
+        <p>Потомки:</p>
+        <div class="container small">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                  <th scope="col">Краткое обозначение</th>
+                  <th scope="col">Полное обозначение</th>
+                  <th scope="col">Обозначение по МЭК</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in ln_inst %}
+                <tr>
+                    <td><a href="?name={{item.short_name}}&type=inst_ln&lntype={{ln_type}}">{{item.short_name}}</a></td>
+                    <td>{{item.full_name}}</td>
+                    <td>{{item.ln_prefix}}{{item.class_name}}{{item.get_instance_report}}</td>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <hr class="my-4">
+
+        {% else %}
+        <h2 class="mt-4">У типа логического узла "{{ln_type}}" нет потомков =(</h2>
+        {% endif %}
+
+</main>
+
+{% endblock %}

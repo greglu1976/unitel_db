@@ -6,25 +6,41 @@
 <main class="container py-5">
 
 
-    <h2 class="mt-4">{{cabinet.name}}</h2>
+    <div class="container px-4 py-5" id="featured-3">
+    <h2 class="pb-2 border-bottom">{{cabinet.name}}</h2>
     <p>{{cabinet.description}}</p>
-    <hr class="my-4">
-        <div class="container small">
-            <a href="/cabinets/?name={{cabinet.name}}&type=cabinet">
-                <button type="button" class="btn btn-success">Отчет по сигналам MMS, уставкам и РАС</button>
-            </a>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+      <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+          <svg class="bi" width="1em" height="1em"><use xlink:href="#collection"/></svg>
         </div>
-    <hr class="my-4">
-        <div class="container small">
-            <a href="/cabinets/?name={{cabinet.name}}&type=dxf">
-        <button type="button" class="btn btn-success">Нарисовать dxf</button>
-             </a>
+        <h3 class="fs-2">Отчет по сигналам MMS, уставкам и РАС</h3>
+        <p>Генерация отчета по шкафу в формате docx</p>
+          <div class="alert alert-warning" role="alert">
+            Время генерации отчета по шкафу зависит от наполнения шкафа и может составлять несколько минут (1~10 минут)
+          </div>
+        <a href="/cabinets/?name={{cabinet.name}}&type=cabinet" class="icon-link d-inline-flex align-items-center">
+          Запуск
+          <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"/></svg>
+        </a>
+      </div>
+      <div class="feature col">
+        <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+          <svg class="bi" width="1em" height="1em"><use xlink:href="#people-circle"/></svg>
         </div>
-    <hr class="my-4">
+        <h3 class="fs-2">Отчет в форме чертежа</h3>
+        <p>Генерация отчета в формате dxf. Вид отчета представляет собой функциональные блоки в составе шкафа с обозначенными входами и выходами.</p>
+                    <div class="alert alert-warning" role="alert">
+            Время генерации отчета по шкафу обычно на превышает 1 минуты
+          </div>
+        <a href="/cabinets/?name={{cabinet.name}}&type=dxf" class="icon-link d-inline-flex align-items-center">
+          Запуск
+          <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"/></svg>
+        </a>
+      </div>
 
-    <div class="alert alert-warning" role="alert">
-    Время генерации отчета по шкафу зависит от наполнения шкафа и может составлять несколько минут
     </div>
+  </div>
 
 
 </main>

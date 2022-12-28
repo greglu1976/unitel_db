@@ -304,7 +304,8 @@ def render_dxf(doc, msp, ied, cab):
 
 def dxf_report(request, cab):
     doc = ezdxf.readfile('base_types/templates/template.dxf')
-    msp = doc.modelspace()
+    #msp = doc.modelspace()
+
 
     # ищем шкаф в базе
     cabinet = Cabinets.objects.get(name=cab)
@@ -313,8 +314,20 @@ def dxf_report(request, cab):
     ied2 = cabinet.terminal2
     ied3 = cabinet.terminal3
 
-    if ied1:
+    if not ied2 or ied2==ied1:
+        msp = doc.modelspace()
         render_dxf(doc, msp, ied1, cab)
+
+    elif ied2 and ied2!=ied1:
+        msp = doc.layout('IED1')
+        render_dxf(doc, msp, ied1, cab)
+        msp = doc.layout('IED2')
+        render_dxf(doc, msp, ied2, cab)
+
+    if ied3:
+        msp = doc.layout('IED3')
+        render_dxf(doc, msp, ied3, cab)
+
     # Save the DXF document.
     doc.saveas("reports/dxf/test.dxf")
 

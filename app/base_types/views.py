@@ -88,6 +88,28 @@ def show(request):
 
 def lntypes(request):
     lntypes = LogicNodesTypes.objects.all()
-
-
     return render(request, 'base_types/lntypes.html', {'lntypes':lntypes})
+
+def connslntype(request):
+    name = request.GET.get('name')
+    type = request.GET.get('type')
+    if type == 'ln_type':
+        lntype = LogicNodesTypes.objects.get(name=name)
+        ln_inst = LogicNodeInstantiated.objects.all().filter(ln_type=lntype.id)
+        for inst in ln_inst:
+            print(inst.short_name)
+        return render(request, 'base_types/conns.html', {'ln_type': name, 'ln_inst':ln_inst})
+    if type == 'inst_ln':
+        lntype = request.GET.get('lntype')
+        ln_id = LogicNodeInstantiated.objects.get(short_name=name)
+        print('>', ln_id.id)
+        lds = LDLNconnections.objects.all().filter(ln=ln_id.id)
+        objs = list()
+        for ld in lds:
+            print('>>>>>>', ld.ld)
+            #objs.append(ld)
+            ldevice = LogicDevices.objects.get(name=ld.ld)
+            print('>>>>>+', ldevice.fb_name)
+            objs.append(ldevice)
+        return render(request, 'base_types/connsfb.html', {'fb': name, 'lntype':lntype, 'objs': objs})
+    return HttpResponse('error')
