@@ -11,7 +11,7 @@
 
         <p>Потомки:</p>
         <div class="container small">
-        <table class="table table-striped table-hover">
+        <table class="table table-striped">
             <thead>
                 <tr>
                   <th scope="col">Краткое обозначение</th>
@@ -25,6 +25,7 @@
                     <td><a href="?name={{item.short_name}}&type=inst_ln&lntype={{ln_type}}">{{item.short_name}}</a></td>
                     <td>{{item.full_name}}</td>
                     <td>{{item.ln_prefix}}{{item.class_name}}{{item.get_instance_report}}</td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>

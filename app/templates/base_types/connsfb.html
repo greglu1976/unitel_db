@@ -11,7 +11,7 @@
         <hr class="my-4">
         <p>входит в состав следующих логических устройств (функциональных блоков):</p>
         <div class="container small">
-         <table class="table table-striped table-hover">
+         <table class="table table-striped">
             <thead>
                 <tr>
                   <th scope="col">Логическое устройство</th>
@@ -20,8 +20,10 @@
             </thead>
             <tbody>
             {% for item in objs %}
+            <tr>
                     <td>{{item.name}}</td>
                     <td>{{item.fb_name}}</td>
+            </tr>
             {% endfor %}
             </tbody>
         </table>
