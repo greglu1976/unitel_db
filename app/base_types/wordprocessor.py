@@ -27,11 +27,13 @@ def render_report(document, table_name, ied_cabinet, cab):
     OBJ_SETT = ('ASG', 'ING') # здесь объекты для функций
     OBJ_SW = ('SPG', 'ENG') # здесь объекты для программных переключателй
     PHASES = ('A', 'B', 'C') # для РАС
+    MEASURES = ('MSQI', 'MMXU', 'MMXN') # классы измерений для отчета по mms
+
 
     df = pd.DataFrame(
         columns=['_ru_ld_name', '_ru_ln_name', '_ru_signal', '_en_ld_names', '_prefix', '_ln', '_instance',
                  '_en_signal', '_clue_attr', '_status', '_func_group', '_cus', '_rdu', '_ras', '_dataset',
-                 '_sgras_name', '_dxf_signal_type', '_dxf_signal_number', 'cdc'])
+                 '_sgras_name', '_dxf_signal_type', '_dxf_signal_number', 'cdc', '_ln_full_name'])
     datasets = set()
 
     # датафрейм для генерации уставок
@@ -56,6 +58,7 @@ def render_report(document, table_name, ied_cabinet, cab):
             got_ln = LogicNodeInstantiated.objects.get(
                 short_name=ldln_conn.ln)  # ищем тип ЛУ, чтобы вывести его объекты
             _prefix = got_ln.ln_prefix
+            _ln_full_name = got_ln.full_name # только для ИЗМЕРЕНИЙ mms!
             _ln = got_ln.class_name
             _instance = got_ln.get_instance_report
             lnobj_conns = LNtypeObjConnections.objects.all().filter(ln_type=got_ln.ln_type)
@@ -82,7 +85,7 @@ def render_report(document, table_name, ied_cabinet, cab):
                     df.loc[len(df.index)] = [_ru_ld_name, _ru_ln_name, _ru_signal, _en_ld_name, _prefix, _ln,
                                              _instance, _en_signal, _clue_attr, _status, _func_group, _cus, _rdu,
                                              _ras, _dataset, _sgras_name, _dxf_signal_type, _dxf_signal_number,
-                                             _cdc]
+                                             _cdc, _ln_full_name]
                 # print('+++++++++++++',_ru_ld_name, '/',_ru_ln_name, ':', _ru_signal )
 
                 # датафрейм для уставок
@@ -118,14 +121,24 @@ def render_report(document, table_name, ied_cabinet, cab):
 
         # dataframe = dataframe.sort_values(by=['_func_group']) # сортируем по функциональной группе
         dataframe = dataframe.sort_values(
-            by=['_func_group', '_en_ld_names', '_ln', '_instance', '_en_signal'])  # сортируем по функциональной группе
+            by=['_func_group', '_en_ld_names','_prefix' , '_ln', '_instance', '_en_signal'])  # сортируем по функциональной группе
         # print('вторая часть марлезонского балета')
         # dataframe = dataframe.reset_index(drop=True)
         for row in dataframe.itertuples():
-            # print(row)
+            print('-----------row-',row)
+            ln_meas = str(row[2])
+            attr = str(row[3])
+            if row[6] in MEASURES: # строка измерений в таблице формируется особым способом
+                if row[5]=='FLT':
+                    ln_meas = 'АварРежим'
+                else:
+                    ln_meas = 'НормРежим'
+                attr = row[20]
+
             row_no_index = (
-            str(row[1]) + ' / ' + str(row[2]) + ': ' + str(row[3]), str(row[4]) + '/' + str(row[5]) + str(row[6])
+            str(row[1]) + ' / ' + ln_meas + ': ' + attr, str(row[4]) + '/' + str(row[5]) + str(row[6])
             + str(row[7]) + '.' + str(row[8]), row[9], row[10], return_abbr(row[11]), row[12], row[13], row[14])
+
             add_row_table_reports(t1, row_no_index)
 
     # выводим таблицу с уставками

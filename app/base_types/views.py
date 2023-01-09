@@ -12,8 +12,14 @@ def index(request):
 def reports(request):
     cabinets = Cabinets.objects.all()
     cabinets = cabinets.order_by('name')
-
-    return render(request, 'base_types/reports.html', {'cabinets': cabinets})
+    cabinets1 = list() # шкафы 1 архитектуры
+    cabinets2 = list() # шкафы 2 архитектуры
+    for cabinet in cabinets:
+        if cabinet.name[-1] =='1':
+            cabinets1.append(cabinet)
+        else:
+            cabinets2.append(cabinet)
+    return render(request, 'base_types/reports.html', {'cabinets1': cabinets1, 'cabinets2': cabinets2 })
 
 def get_report(request):
     cab = request.GET.get('name')

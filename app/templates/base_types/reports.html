@@ -4,13 +4,14 @@
 {% block content %}
 
 <main class="container py-5">
-    {% if cabinets %}
+    {% if cabinets1 and cabinets2 %}
 
     <h2 class="mt-4">Перечень шкафов/отсеков</h2>
-    <p>База данных содержит информацию по следующим типам шкафов/отсеков РЗА:</p>
+    <p>База данных содержит информацию по следующим типам шкафов/отсеков РЗА</p>
     <hr class="my-4">
+    <p><span style="border: 2px solid #000000; padding:4px;">2 архитектуры:</span></p>
     <div class="container small">
-    <table class="table table-striped">
+        <table class="table table-striped">
                 <thead>
                     <tr>
                       <th scope="col">Обозначение шкафа/отсека</th>
@@ -21,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in cabinets %}
+                    {% for item in cabinets1 %}
                     <tr>
                         <td><a href="cabinet/?name={{item.name}}&type=cabinet">{{item.name}}</a></td>
                         <td>{{item.description}}</td>
@@ -31,9 +32,40 @@
                     </tr>
                 {% endfor %}
                 </tbody>
-            </table>
+        </table>
     </div>
     <hr class="my-4">
+
+    <p><span style="border: 2px solid #000000; padding:4px;">3 архитектуры:</span></p>
+    <hr class="my-4">
+    <div class="container small">
+        <table class="table table-striped">
+                <thead>
+                    <tr>
+                      <th scope="col">Обозначение шкафа/отсека</th>
+                      <th scope="col">Назначение шкафа/отеска</th>
+                      <th scope="col">ИЭУ1</th>
+                      <th scope="col">ИЭУ2</th>
+                      <th scope="col">ИЭУ3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cabinets2 %}
+                    <tr>
+                        <td><a href="cabinet/?name={{item.name}}&type=cabinet">{{item.name}}</a></td>
+                        <td>{{item.description}}</td>
+                        <td><a href="show/?name={{item.terminal1}}&type=ied">{{item.terminal1}}</a></td>
+                        <td><a href="show/?name={{item.terminal2}}&type=ied">{{item.get_terminal2}}</a></td>
+                        <td><a href="show/?name={{item.terminal3}}&type=ied">{{item.get_terminal3}}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+        </table>
+    </div>
+    <hr class="my-4">
+
+
+
 
     {% else %}
     <h2 class="mt-4">В базе данных нет шкафов :(</h2>
